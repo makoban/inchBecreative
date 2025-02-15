@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>対角線インチ計算機</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen py-8">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const DiagonalCalculator = () => {
+            const [width, setWidth] = React.useState('');
+            const [height, setHeight] = React.useState('');
+            const [diagonal, setDiagonal] = React.useState(null);
+            const [aspectRatio, setAspectRatio] = React.useState(null);
+
+            const calculateDiagonal = React.useCallback((w, h) => {
+                const widthCm = parseFloat(w);
+                const heightCm = parseFloat(h);
+                
+                if (!isNaN(widthCm) && !isNaN(heightCm) && widthCm > 0 && heightCm > 0) {
+                    const diagonalCm = Math.sqrt(widthCm * widthCm + heightCm * heightCm);
+                    const diagonalInch = diagonalCm / 2.54;
+                    
+                    const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+                    const ratio = gcd(Math.round(widthCm * 10), Math.round(heightCm * 10));
+                    const aspectWidth = (widthCm * 10) / ratio;
+                    const aspectHeight = (heightCm * 10) / ratio;
+                    
+                    setDiagonal(diagonalInch);
+                    setAspectRatio(`${aspectWidth}:${aspectHeight}`);
+                } else {
+                    setDiagonal(null);
+                    setAspectRatio(null);
+                }
+            }, []);
+
+            const handleWidthChange = (e) => {
+                const value = e.target.value;
+                setWidth(value);
+                calculateDiagonal(value, height);
+            };
+
+            const handleHeightChange = (e) => {
+                const value = e.target.value;
+                setHeight(value);
+                calculateDiagonal(width, value);
+            };
+
+            return (
+                <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
+                    <h1 className="text-2xl font-bold text-center mb-6">対角線インチ計算機</h1>
+                    
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    横幅 (cm)
+                                </label>
+                                <input
+                                    type="number"
+                                    value={width}
+                                    onChange={handleWidthChange}
+                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    min="0"
+                                    step="0.1"
+                                    placeholder="例: 34.5"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    高さ (cm)
+                                </label>
+                                <input
+                                    type="number"
+                                    value={height}
+                                    onChange={handleHeightChange}
+                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    min="0"
+                                    step="0.1"
+                                    placeholder="例: 19.4"
+                                />
+                            </div>
+                        </div>
+                        
+                        {diagonal !== null && (
+                            <div className="mt-6">
+                                <div className="bg-gray-50 rounded-lg p-4">
+                                    <h3 className="text-lg font-semibold mb-2">計算結果</h3>
+                                    <p className="text-3xl font-bold text-blue-600">
+                                        {diagonal.toFixed(1)} インチ
+                                    </p>
+                                    <p className="text-sm text-gray-600 mt-2">
+                                        アスペクト比: {aspectRatio}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<DiagonalCalculator />, document.getElementById('root'));
+    </script>
+</body>
+</html>
