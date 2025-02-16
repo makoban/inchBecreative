@@ -1,112 +1,262 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>対角線インチ計算機</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <title>サイズ計算機</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            margin-bottom: 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .results {
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .result-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .result-item span {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .price-section {
+            margin-top: 25px;
+            background: #e8f4ff;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .price-title {
+            color: #2c5282;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #bee3f8;
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .price-item:last-child {
+            border-bottom: none;
+        }
+
+        .price-label {
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .price-value {
+            color: #2b6cb0;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                margin-bottom: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            input, button {
+                font-size: 16px;
+            }
+        }
+
+        .bottom-space {
+            height: 40px;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen py-8">
-    <div id="root"></div>
+<body>
+    <div class="container">
+        <h1>ディスプレイサイズ計算機</h1>
+        
+        <div class="input-group">
+            <label>横幅 (cm)</label>
+            <input type="number" id="width" value="100">
+        </div>
 
-    <script type="text/babel">
-        const DiagonalCalculator = () => {
-            const [width, setWidth] = React.useState('');
-            const [height, setHeight] = React.useState('');
-            const [diagonal, setDiagonal] = React.useState(null);
-            const [aspectRatio, setAspectRatio] = React.useState(null);
+        <div class="input-group">
+            <label>高さ (cm)</label>
+            <input type="number" id="height" value="100">
+        </div>
 
-            const calculateDiagonal = React.useCallback((w, h) => {
-                const widthCm = parseFloat(w);
-                const heightCm = parseFloat(h);
-                
-                if (!isNaN(widthCm) && !isNaN(heightCm) && widthCm > 0 && heightCm > 0) {
-                    const diagonalCm = Math.sqrt(widthCm * widthCm + heightCm * heightCm);
-                    const diagonalInch = diagonalCm / 2.54;
-                    
-                    const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
-                    const ratio = gcd(Math.round(widthCm * 10), Math.round(heightCm * 10));
-                    const aspectWidth = (widthCm * 10) / ratio;
-                    const aspectHeight = (heightCm * 10) / ratio;
-                    
-                    setDiagonal(diagonalInch);
-                    setAspectRatio(`${aspectWidth}:${aspectHeight}`);
-                } else {
-                    setDiagonal(null);
-                    setAspectRatio(null);
-                }
-            }, []);
+        <button onclick="calculate()">計算する</button>
 
-            const handleWidthChange = (e) => {
-                const value = e.target.value;
-                setWidth(value);
-                calculateDiagonal(value, height);
-            };
+        <div class="results">
+            <div class="result-item">
+                <strong>対角線:</strong> 
+                <span id="diagonal">-</span>
+            </div>
+            <div class="result-item">
+                <strong>面積:</strong> 
+                <span id="area">-</span>
+            </div>
+            <div class="result-item">
+                <strong>アスペクト比:</strong> 
+                <span id="aspect">-</span>
+            </div>
 
-            const handleHeightChange = (e) => {
-                const value = e.target.value;
-                setHeight(value);
-                calculateDiagonal(width, value);
-            };
-
-            return (
-                <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
-                    <h1 className="text-2xl font-bold text-center mb-6">対角線インチ計算機</h1>
-                    
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    横幅 (cm)
-                                </label>
-                                <input
-                                    type="number"
-                                    value={width}
-                                    onChange={handleWidthChange}
-                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                    min="0"
-                                    step="0.1"
-                                    placeholder="例: 34.5"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    高さ (cm)
-                                </label>
-                                <input
-                                    type="number"
-                                    value={height}
-                                    onChange={handleHeightChange}
-                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                    min="0"
-                                    step="0.1"
-                                    placeholder="例: 19.4"
-                                />
-                            </div>
-                        </div>
-                        
-                        {diagonal !== null && (
-                            <div className="mt-6">
-                                <div className="bg-gray-50 rounded-lg p-4">
-                                    <h3 className="text-lg font-semibold mb-2">計算結果</h3>
-                                    <p className="text-3xl font-bold text-blue-600">
-                                        {diagonal.toFixed(1)} インチ
-                                    </p>
-                                    <p className="text-sm text-gray-600 mt-2">
-                                        アスペクト比: {aspectRatio}
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+            <div class="price-section">
+                <div class="price-title">概算お見積り</div>
+                <div class="price-item">
+                    <span class="price-label">看板（屋内）</span>
+                    <span id="price-indoor" class="price-value">-</span>
                 </div>
-            );
-        };
+                <div class="price-item">
+                    <span class="price-label">看板（屋外）</span>
+                    <span id="price-outdoor" class="price-value">-</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-label">床（屋内）</span>
+                    <span id="price-floor" class="price-value">-</span>
+                </div>
+            </div>
+        </div>
 
-        ReactDOM.render(<DiagonalCalculator />, document.getElementById('root'));
+        <div class="bottom-space"></div>
+    </div>
+
+    <script>
+        function calculate() {
+            var width = Number(document.getElementById('width').value);
+            var height = Number(document.getElementById('height').value);
+
+            // 対角線計算
+            var diagonalCm = Math.sqrt(width * width + height * height);
+            var diagonalInch = diagonalCm / 2.54;
+            document.getElementById('diagonal').textContent = 
+                diagonalInch.toFixed(1) + " インチ";
+
+            // 面積計算
+            var areaM2 = (width * height) / 10000;
+            document.getElementById('area').textContent = 
+                areaM2.toFixed(2) + " m²";
+
+            // アスペクト比計算
+            var gcd = function(a, b) {
+                return b === 0 ? a : gcd(b, a % b);
+            };
+            var ratio = gcd(Math.round(width * 10), Math.round(height * 10));
+            var aspectWidth = (width * 10) / ratio;
+            var aspectHeight = (height * 10) / ratio;
+            document.getElementById('aspect').textContent = 
+                Math.round(aspectWidth) + ":" + Math.round(aspectHeight);
+
+            // 価格計算
+            var priceIndoor = areaM2 * 403200;
+            var priceOutdoor = areaM2 * 504000;
+            var priceFloor = areaM2 * 806400;  // 床価格の計算を追加
+
+            // 価格表示
+            document.getElementById('price-indoor').textContent = 
+                "¥" + Math.round(priceIndoor).toLocaleString();
+            document.getElementById('price-outdoor').textContent = 
+                "¥" + Math.round(priceOutdoor).toLocaleString();
+            document.getElementById('price-floor').textContent = 
+                "¥" + Math.round(priceFloor).toLocaleString();
+
+            // ローカルストレージに保存
+            localStorage.setItem('screenWidth', width);
+            localStorage.setItem('screenHeight', height);
+        }
+
+        // 保存された値を読み込む
+        window.onload = function() {
+            var savedWidth = localStorage.getItem('screenWidth');
+            var savedHeight = localStorage.getItem('screenHeight');
+            
+            if (savedWidth) {
+                document.getElementById('width').value = savedWidth;
+            }
+            if (savedHeight) {
+                document.getElementById('height').value = savedHeight;
+            }
+            
+            calculate();
+        };
     </script>
 </body>
 </html>
