@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mitsukaru Connect Infographic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f0f9ff; /* Light Blue Background */
+            color: #0f172a;
+        }
+        
+        /* Chart Container Styling - MANDATORY */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0ea5e9; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0284c7; 
+        }
+
+        /* Process Step Connector */
+        .step-connector::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 2rem;
+            background-color: #cbd5e1;
+            z-index: 0;
+        }
+        
+        .step-card:last-child .step-connector::after {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .step-connector::after {
+                width: 3rem;
+                height: 2px;
+                top: 50%;
+                left: 100%;
+                transform: translateY(-50%) translateX(0);
+            }
+        }
+    </style>
+    <!-- 
+        Palette: Oceanic Trust & Clarity 
+        Primary: #0284c7 (Blue 600)
+        Secondary: #06b6d4 (Cyan 500)
+        Accent: #f59e0b (Amber 500)
+        
+        NO SVG USED. NO MERMAID JS USED.
+        Narrative Plan: 
+        1. Intro: The value of trust.
+        2. Problem: Visualization of lost opportunities.
+        3. Solution: The Closed Platform concept.
+        4. Comparison: Radar chart of advantages.
+        5. Money: Risk-free model visualization.
+        6. Roadmap: Future timeline.
+        7. Conclusion.
+        
+        Chart Justifications:
+        1. Pie Chart: To show the composition of reasons for refusing work (Inform/Compare).
+        2. Radar Chart: To compare Mitsukaru against competitors across multiple qualitative metrics (Compare/Relationships).
+        3. Stacked Bar Chart: To show the cost structure breakdown (Compare/Inform).
+    -->
+</head>
+<body class="antialiased">
+
+    <!-- Header / Hero Section -->
+    <header class="bg-gradient-to-r from-sky-600 to-cyan-500 text-white py-16 px-4 shadow-lg">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="inline-block bg-white/20 backdrop-blur-sm px-4 py-1 rounded-full text-sm font-bold mb-4">
+                完全審査制・士業特化型プラットフォーム
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black mb-6 leading-tight">
+                Mitsukaru Connect
+                <span class="block text-2xl md:text-3xl font-medium mt-2 opacity-90">信頼で繋がる、新しいお仕事シェアリング</span>
+            </h1>
+            <p class="text-lg md:text-xl max-w-2xl mx-auto opacity-90">
+                「専門外だから」と断る痛みを、「信頼できる仲間への紹介」という価値に変える。<br>
+                AIと厳格な審査が実現する、士業のためのクローズド・エコシステム。
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-12 space-y-20">
+
+        <!-- SECTION 1: THE PROBLEM -->
+        <section>
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">現状の「もったいない」</h2>
+                <p class="text-slate-600 max-w-2xl mx-auto">
+                    多くの士業事務所が、リソース不足や専門外であることを理由に案件を断っています。
+                    一方で、見知らぬ他社への紹介は「品質への不安」から躊躇われ、機会損失が生まれています。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <!-- Card 1: The Stats -->
+                <div class="bg-white rounded-2xl shadow-md p-6 border-t-4 border-sky-500">
+                    <h3 class="text-xl font-bold text-slate-700 mb-2">案件をお断りする理由</h3>
+                    <p class="text-sm text-slate-500 mb-6">なぜ受任できないのか？（想定内訳）</p>
+                    <div class="chart-container">
+                        <canvas id="problemChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-slate-400 mt-4">※業界の一般的な課題感に基づくイメージ</p>
+                </div>
+
+                <!-- Text Context -->
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-500">
+                        <h4 class="font-bold text-lg text-slate-800 mb-2">紹介元の悩み</h4>
+                        <p class="text-slate-600">「知り合いにこの分野のプロがいない…」<br>「知らない人に紹介して、変な対応をされたら困る」</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-cyan-500">
+                        <h4 class="font-bold text-lg text-slate-800 mb-2">受任先の悩み</h4>
+                        <p class="text-slate-600">「ネット集客は競合が多くて疲弊する」<br>「もっと質の高い紹介案件が欲しいけれど、営業が苦手」</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: THE SOLUTION -->
+        <section class="bg-white rounded-3xl shadow-lg p-8 md:p-12 overflow-hidden relative">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-sky-500 to-cyan-400"></div>
+            
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">Mitsukaru Connectの答え</h2>
+                <p class="text-slate-600 max-w-2xl mx-auto">
+                    「顔が見える安心感」と「デジタルの効率」を融合。
+                    審査を通過したプロフェッショナルだけの空間で、AIが最適なマッチングをサポートします。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="text-center p-6 bg-slate-50 rounded-xl hover:bg-sky-50 transition-colors duration-300">
+                    <div class="text-5xl mb-4">🔒</div>
+                    <h3 class="text-xl font-bold text-sky-700 mb-3">完全審査制 (Gatekeeping)</h3>
+                    <p class="text-slate-600 text-sm">
+                        誰でも登録できるわけではありません。ミツカル社が面談し、実績を確認した事務所のみにIDを発行。「ハズレ」のリスクを極小化します。
+                    </p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="text-center p-6 bg-slate-50 rounded-xl hover:bg-sky-50 transition-colors duration-300">
+                    <div class="text-5xl mb-4">🤖</div>
+                    <h3 class="text-xl font-bold text-sky-700 mb-3">AIスマートマッチング</h3>
+                    <p class="text-slate-600 text-sm">
+                        案件の要約から候補者のリコメンドまでAIがアシスト。「要件」「予算」「緊急度」を整理し、最適なパートナーを提案します。
+                    </p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="text-center p-6 bg-slate-50 rounded-xl hover:bg-sky-50 transition-colors duration-300">
+                    <div class="text-5xl mb-4">💰</div>
+                    <h3 class="text-xl font-bold text-sky-700 mb-3">紹介料は自由設定</h3>
+                    <p class="text-slate-600 text-sm">
+                        紹介元が「お礼」の金額（手数料）を自由に決められます。固定費ではなく、成約時のみ発生する成果報酬型でリスクゼロ。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: COMPETITIVE ADVANTAGE -->
+        <section>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="order-2 md:order-1">
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+                <div class="order-1 md:order-2">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-6">既存サービスとの決定的な違い</h2>
+                    <p class="text-slate-600 mb-6">
+                        一般的なマッチングサイトは「量」を重視しがちですが、Mitsukaru Connectは「質」と「信頼」に特化しています。
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-sky-100 text-sky-600 font-bold mr-3 mt-1">✓</span>
+                            <div>
+                                <strong class="block text-slate-800">信頼性 (Trust)</strong>
+                                <span class="text-sm text-slate-500">身元保証済みのプロのみ。トラブルリスクを回避。</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-sky-100 text-sky-600 font-bold mr-3 mt-1">✓</span>
+                            <div>
+                                <strong class="block text-slate-800">コスト効率 (Cost Efficiency)</strong>
+                                <span class="text-sm text-slate-500">初期費用・月額費ゼロ。完全成果報酬型。</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-sky-100 text-sky-600 font-bold mr-3 mt-1">✓</span>
+                            <div>
+                                <strong class="block text-slate-800">マッチング精度 (Accuracy)</strong>
+                                <span class="text-sm text-slate-500">AI分析と双方向面談による納得のいくパートナー選び。</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: PROCESS FLOW -->
+        <section class="bg-slate-50 rounded-3xl p-8 md:p-12">
+            <h2 class="text-3xl font-bold text-center text-slate-800 mb-12">マッチングまでの流れ</h2>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-8 relative">
+                <!-- Step 1 -->
+                <div class="step-card relative flex flex-col items-center text-center w-full md:w-1/4 z-10">
+                    <div class="step-connector w-full h-full absolute md:static flex justify-center items-center"></div>
+                    <div class="w-16 h-16 rounded-full bg-white border-4 border-sky-500 flex items-center justify-center text-2xl shadow-md mb-4 z-20">
+                        📝
+                    </div>
+                    <h4 class="font-bold text-lg text-slate-800">案件登録</h4>
+                    <p class="text-sm text-slate-500 mt-2 px-2">
+                        紹介元が概要を入力。AIが要約を作成。紹介料もここで設定。
+                    </p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-card relative flex flex-col items-center text-center w-full md:w-1/4 z-10">
+                    <div class="step-connector w-full h-full absolute md:static flex justify-center items-center"></div>
+                    <div class="w-16 h-16 rounded-full bg-white border-4 border-sky-500 flex items-center justify-center text-2xl shadow-md mb-4 z-20">
+                        🙋
+                    </div>
+                    <h4 class="font-bold text-lg text-slate-800">挙手（オファー）</h4>
+                    <p class="text-sm text-slate-500 mt-2 px-2">
+                        受任希望者が「得意です！」と立候補。アピール文を送信。
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-card relative flex flex-col items-center text-center w-full md:w-1/4 z-10">
+                    <div class="step-connector w-full h-full absolute md:static flex justify-center items-center"></div>
+                    <div class="w-16 h-16 rounded-full bg-white border-4 border-sky-500 flex items-center justify-center text-2xl shadow-md mb-4 z-20">
+                        💻
+                    </div>
+                    <h4 class="font-bold text-lg text-slate-800">Web面談</h4>
+                    <p class="text-sm text-slate-500 mt-2 px-2">
+                        Zoom等で顔合わせ。相性や条件の最終確認を行います。
+                    </p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-card relative flex flex-col items-center text-center w-full md:w-1/4 z-10">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-2xl shadow-md mb-4 z-20 text-white">
+                        🤝
+                    </div>
+                    <h4 class="font-bold text-lg text-slate-800">成約・開始</h4>
+                    <p class="text-sm text-slate-500 mt-2 px-2">
+                        システム上で合意。ここから業務スタート。手数料もここで確定。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: BUSINESS MODEL -->
+        <section>
+            <h2 class="text-3xl font-bold text-center text-slate-800 mb-10">リスクゼロの料金体系</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <p class="text-slate-600 mb-6 text-lg">
+                        初期費用や月額固定費は一切かかりません。案件が成約し、売上が立った時のみ費用が発生する「完全成果報酬型」です。
+                    </p>
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-4 border-b pb-2">費用発生のタイミング</h4>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-slate-500">登録・掲載</span>
+                            <span class="font-bold text-sky-600 text-xl">0円</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-slate-500">マッチング不成立</span>
+                            <span class="font-bold text-sky-600 text-xl">0円</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-sky-50 p-2 rounded -mx-2">
+                            <span class="text-slate-700 font-medium">成約時のみ</span>
+                            <span class="font-bold text-amber-500 text-xl">成果報酬</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                     <div class="chart-container">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-slate-400 mt-2">成約時の収益分配イメージ（紹介手数料＋システム利用料）</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: ROADMAP -->
+        <section class="bg-sky-900 text-white rounded-3xl p-8 md:p-12">
+            <h2 class="text-3xl font-bold text-center mb-12 text-sky-100">開発ロードマップ</h2>
+            <div class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-sky-400 before:to-transparent">
+                
+                <!-- Phase 1 -->
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-sky-400 bg-sky-800 group-[.is-active]:bg-sky-400 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                        1
+                    </div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-sky-800 p-6 rounded-xl border border-sky-700 shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-lg text-white">フェーズ 1：MVP開発・検証</h3>
+                            <span class="text-xs bg-sky-600 px-2 py-1 rounded text-sky-100">Now</span>
+                        </div>
+                        <p class="text-sky-200 text-sm">
+                            基本機能（登録・掲示板・メッセージ）の実装。<br>
+                            ミツカル社コネクション限定のクローズドβ版運用で品質を担保。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-sky-600 bg-sky-900 text-sky-300 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                        2
+                    </div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-sky-800/50 p-6 rounded-xl border border-sky-700/50">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-lg text-sky-100">フェーズ 2：機能拡張</h3>
+                            <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">Next</span>
+                        </div>
+                        <p class="text-sky-300 text-sm">
+                            AI要約・マッチング機能の本格実装。<br>
+                            オンライン面談連携機能で、プラットフォーム内での完結を目指す。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-sky-600 bg-sky-900 text-sky-300 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                        3
+                    </div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-sky-800/50 p-6 rounded-xl border border-sky-700/50">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-lg text-sky-100">フェーズ 3：一般開放・拡大</h3>
+                            <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">Future</span>
+                        </div>
+                        <p class="text-sky-300 text-sm">
+                            審査フローのシステム化による規模拡大。<br>
+                            スマホアプリ化を検討し、より手軽なマッチングを実現。
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center py-12 border-t border-slate-200">
+            <h3 class="text-2xl font-bold text-slate-700 mb-4">信頼でつながる未来へ</h3>
+            <p class="text-slate-500 mb-8">
+                Mitsukaru Connectは、士業の可能性を最大化するインフラを目指します。
+            </p>
+            <div class="inline-block bg-slate-100 px-6 py-3 rounded-full text-slate-500 text-sm">
+                © Mitsukaru Connect Project
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        // --- UTILITY: LABEL WRAPPING (16 char limit) ---
+        function splitString(str) {
+            const limit = 16;
+            if (str.length <= limit) return str;
+            
+            const words = str.split(''); // Splitting by char for Japanese text mostly
+            // For Japanese text, we can split arbitrarily or try to respect phrases.
+            // Since this is generic, simple chunking is safer for layout than word-break logic for JP.
+            // However, let's try a simple chunker.
+            
+            const chunks = [];
+            let currentChunk = '';
+            
+            // Heuristic: If it has spaces (English-like), split by words.
+            if (str.includes(' ')) {
+                 const words = str.split(' ');
+                 for (let word of words) {
+                     if ((currentChunk + word).length > limit) {
+                         chunks.push(currentChunk.trim());
+                         currentChunk = word + ' ';
+                     } else {
+                         currentChunk += word + ' ';
+                     }
+                 }
+                 chunks.push(currentChunk.trim());
+                 return chunks;
+            }
+
+            // Japanese continuous text
+            for (let i = 0; i < str.length; i += limit) {
+                chunks.push(str.substring(i, i + limit));
+            }
+            return chunks;
+        }
+
+        // --- CHART CONFIGURATION ---
+        Chart.defaults.font.family = "'Noto Sans JP', sans-serif";
+        Chart.defaults.color = '#475569'; // Slate 600
+
+        // Common Tooltip Config for Multiline support
+        const commonTooltipConfig = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            },
+            backgroundColor: 'rgba(15, 23, 42, 0.9)', // Slate 900
+            padding: 12,
+            cornerRadius: 8
+        };
+
+        // 1. PROBLEM CHART (Pie)
+        const ctxProblem = document.getElementById('problemChart').getContext('2d');
+        new Chart(ctxProblem, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    splitString('専門外の分野である'), 
+                    splitString('リソース（人手）不足'), 
+                    splitString('利益相反・コンフリクト'), 
+                    splitString('その他')
+                ],
+                datasets: [{
+                    data: [45, 35, 10, 10],
+                    backgroundColor: [
+                        '#0284c7', // Primary Blue
+                        '#0ea5e9', // Sky Blue
+                        '#7dd3fc', // Light Blue
+                        '#cbd5e1'  // Slate
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 20 }
+                    },
+                    tooltip: commonTooltipConfig,
+                    title: {
+                        display: true,
+                        text: '案件受任拒否の主な理由',
+                        font: { size: 16, weight: 'bold' }
+                    }
+                }
+            }
+        });
+
+        // 2. RADAR CHART (Comparison)
+        const ctxRadar = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: [
+                    splitString('信頼性 (Trust)'), 
+                    splitString('紹介案件の質'), 
+                    splitString('コスト効率'), 
+                    splitString('手軽さ・UX'), 
+                    splitString('マッチング速度')
+                ],
+                datasets: [{
+                    label: 'Mitsukaru Connect',
+                    data: [5, 5, 5, 4, 4],
+                    fill: true,
+                    backgroundColor: 'rgba(6, 182, 212, 0.2)', // Cyan transparent
+                    borderColor: '#06b6d4',
+                    pointBackgroundColor: '#06b6d4',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#06b6d4'
+                }, {
+                    label: '一般的なマッチングサイト',
+                    data: [2, 2, 3, 5, 3],
+                    fill: true,
+                    backgroundColor: 'rgba(148, 163, 184, 0.2)', // Slate transparent
+                    borderColor: '#94a3b8',
+                    pointBackgroundColor: '#94a3b8',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#94a3b8'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { display: false },
+                        suggestedMin: 0,
+                        suggestedMax: 5,
+                        grid: { color: '#e2e8f0' },
+                        pointLabels: {
+                            font: { size: 12, weight: 'bold' }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: commonTooltipConfig,
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // 3. COST CHART (Stacked Bar - to show structure)
+        // Comparing "Fixed Cost" vs "Success Cost" model
+        const ctxCost = document.getElementById('costChart').getContext('2d');
+        new Chart(ctxCost, {
+            type: 'bar',
+            data: {
+                labels: [splitString('一般的な広告媒体'), splitString('Mitsukaru Connect')],
+                datasets: [
+                    {
+                        label: '掲載費/月額固定費 (リスク)',
+                        data: [50, 0], // Arbitrary units representing cost burden
+                        backgroundColor: '#cbd5e1', // Grey for "Bad/Cost"
+                    },
+                    {
+                        label: 'システム利用料 (成果報酬)',
+                        data: [0, 15], 
+                        backgroundColor: '#0ea5e9', // Blue for "Fair"
+                    },
+                    {
+                        label: '紹介手数料 (相手への謝礼)',
+                        data: [0, 35],
+                        backgroundColor: '#f59e0b', // Amber for "Value Exchange"
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y', // Horizontal bar
+                scales: {
+                    x: {
+                        stacked: true,
+                        display: false // Hide axis numbers to keep it conceptual
+                    },
+                    y: {
+                        stacked: true,
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    tooltip: commonTooltipConfig,
+                    legend: { position: 'bottom' },
+                    title: {
+                        display: true,
+                        text: 'コスト構造の比較イメージ',
+                        padding: { bottom: 20 }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
